@@ -7,7 +7,7 @@ namespace TechShop.Data
 {
     public interface IRepository<T> where T : class
     {
-        ICollection<T> Get(Expression<Func<T, bool>> filter = null,
+        IEnumerable<T> Get(Expression<Func<T, bool>> filter = null,
             Func<IQueryable<T>,
                 IOrderedQueryable<T>> orderBy = null,
             string includeProperties = "");

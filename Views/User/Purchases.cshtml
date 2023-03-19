@@ -1,4 +1,4 @@
-﻿@model TechShop.Models.Dto.UserPurchaseVM
+﻿@model IEnumerable<TechShop.Models.Entity.Purchase>
 
 @{
     ViewBag.Title = "User Purchase";
@@ -9,7 +9,7 @@
 
 <div>
     <hr/>
-    @foreach (var i in Model.Purchases)
+    @foreach (var i in Model)
     {
         <div class="row">
             <h3>Purchase from @i.CreationTime date</h3>

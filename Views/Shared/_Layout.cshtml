@@ -27,22 +27,15 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
                         <li class="nav-item ms-auto">
-                            <a class="nav-link text-dark">
-                                Hello,
-                                @{
-                                    System.Diagnostics.Debug.Assert(User.Identity != null, "User.Identity != null");
-                                }
-                                @User.Identity.Name
+                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Info">
+                                Hello, @User.Identity.Name
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Logout">Cart</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="ShoppingCart" asp-action="Index">Cart</a>
                         </li>
 
                         <li class="nav-item">
@@ -68,7 +61,7 @@
 
 <footer class="border-top footer fixed-bottom text-muted">
     <div class="container">
-        &copy; 2023 - TechShop - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        &copy; 2023 - TechShop by ChinhPC
     </div>
 </footer>
 

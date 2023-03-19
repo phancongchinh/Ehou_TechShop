@@ -9,19 +9,16 @@ namespace TechShop.Controllers
     {
         private readonly RepositoryContainer _container = new();
 
+        [HttpGet]
         public IActionResult Index()
         {
-            ViewData["Categories"] = _container.CategoryRepository.Get();
             var products = _container.ProductRepository.Get(includeProperties: "Image,Category");
             ViewData["Products"] = products;
+            ViewData["Categories"] = _container.CategoryRepository.Get();
             return View(products);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
+        [HttpGet]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

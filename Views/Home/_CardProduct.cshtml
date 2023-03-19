@@ -1,12 +1,23 @@
 ﻿@model TechShop.Models.Entity.Product
 
-<div class="card w-25 m-4" style="width: 18rem;">
+<div class="card m-4" style="width: 20%">
     <img src="/image/@Html.DisplayFor(model => model.Image.Path)" class="card-img-top" alt="Model picture"/>
     <div class="card-body">
         <p class="card-title card-link">
             <a href="/product/@Html.DisplayFor(model => model.Id)">@Html.DisplayFor(model => model.Name)</a>
         </p>
         <p class="card-text">@Html.DisplayFor(model => model.Description)</p>
-        <p class="card-text text-info">@string.Format("{0:C}", Model.Price)</p>
+        <div class="d-flex align-items-center">
+            <span class="card-text text-info">@string.Format("{0:C}", Model.Price)</span>
+            @if (Model.Quantity <= 0)
+            {
+                <span class="text-danger ms-auto">Out of stock</span>
+            }
+            else
+            {
+                <button class="btn btn-success ms-auto" asp-controller="" asp-action="">Add to cart</button>
+            }
+        </div>
+        
     </div>
 </div>

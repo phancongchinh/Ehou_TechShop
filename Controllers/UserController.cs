@@ -1,9 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TechShop.Data;
-using TechShop.Models;
-using TechShop.Models.Dto;
+using TechShop.Models.Entity;
 
 namespace TechShop.Controllers
 {
@@ -13,45 +13,29 @@ namespace TechShop.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("account/info")]
         public IActionResult Info()
         {
-            // if (!User.Identity.IsAuthenticated) return RedirectToAction("Index", "Home");
-
-            var user = _container.UserRepository.Get(x => x.Email == User.Identity.Name, includeProperties: "Role")
+            User user = _container.UserRepository.Get(x => x.Email == User.Identity.Name, includeProperties: "UserRole")
                 .FirstOrDefault();
 
-            if (user == null) return View("~/Views/Error/Error404.cshtml", ErrorVM.Default());
+            if (user == null) return NotFound();
 
-            UserInfoVM model = new()
-            {
-                Name = user.Name,
-                Phone = user.Phone,
-                Email = user.Email,
-                IsAdmin = user.UserRole.Id == 1,
-            };
-
-            return View(model);
+            return View(user);
         }
 
         [HttpGet]
         [Authorize]
-        public IActionResult UserPurchases()
+        public IActionResult Purchases()
         {
-            var email = User.Identity.Name;
-            var user = _container.UserRepository.Get(x => x.Email == email).FirstOrDefault();
+            User user = _container.UserRepository.Get(x => x.Email == User.Identity.Name).FirstOrDefault();
 
-            if (user == null) return View();
+            if (user == null) return NotFound();
 
-            var purchases = _container.PurchaseRepository.Get(x => x.UserId == user.Id,
-                includeProperties: "PurchaseProducts.Product");
-            // .OrderByDescending(x => x.CreationTime);
+            IEnumerable<Purchase> purchases = _container.PurchaseRepository.Get(x => x.UserId == user.Id,
+                    includeProperties: "PurchaseProducts.Product")
+                .OrderByDescending(x => x.CreationTime);
 
-            var model = new UserPurchaseVM()
-            {
-                Purchases = purchases
-            };
-            return View(model);
+            return View(purchases);
         }
     }
 }

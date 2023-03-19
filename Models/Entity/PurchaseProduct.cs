@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TechShop.Models.Entity
 {
+    [Table("purchase_product")]
     public class PurchaseProduct
     {
-        [Key]
         public int PurchaseId { get; set; }
-        [Key]
         public int ProductId { get; set; }
         public int Count { get; set; }
         

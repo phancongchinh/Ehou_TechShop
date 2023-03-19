@@ -17,7 +17,7 @@ namespace TechShop.Data
             dbSet = this.context.Set<T>();
         }
 
-        public ICollection<T> Get(Expression<Func<T, bool>> filter = null,
+        public IEnumerable<T> Get(Expression<Func<T, bool>> filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeProperties = "")
         {
             IQueryable<T> query = dbSet;

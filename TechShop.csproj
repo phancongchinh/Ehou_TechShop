@@ -19,4 +19,14 @@
       <Content Include="StaticFiles\*.*" />
     </ItemGroup>
 
+    <ItemGroup>
+      <AdditionalFiles Include="Views\Product\Index.cshtml" />
+      <AdditionalFiles Include="Views\User\Info.cshtml" />
+      <AdditionalFiles Include="Views\User\UserPurchases.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Pages" />
+    </ItemGroup>
+
 </Project>
