@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using TechShop.Data.Configurations;
-using TechShop.Models.Entity;
 
 namespace TechShop.Data
 {
@@ -29,7 +28,6 @@ namespace TechShop.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            Seed.SeedData(builder);
 
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new ProductConfiguration());

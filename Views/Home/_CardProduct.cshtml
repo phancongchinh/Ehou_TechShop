@@ -1,0 +1,12 @@
+﻿@model TechShop.Models.Entity.Product
+
+<div class="card w-25 m-4" style="width: 18rem;">
+    <img src="/image/@Html.DisplayFor(model => model.Image.Path)" class="card-img-top" alt="Model picture"/>
+    <div class="card-body">
+        <p class="card-title card-link">
+            <a href="/product/@Html.DisplayFor(model => model.Id)">@Html.DisplayFor(model => model.Name)</a>
+        </p>
+        <p class="card-text">@Html.DisplayFor(model => model.Description)</p>
+        <p class="card-text text-info">@string.Format("{0:C}", Model.Price)</p>
+    </div>
+</div>

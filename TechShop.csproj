@@ -16,25 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="StaticFiles\2086797575.jpg" />
-      <Content Include="StaticFiles\2128362825.jpg" />
-      <Content Include="StaticFiles\2143730405.jpg" />
-      <Content Include="StaticFiles\2146260125.jpg" />
-      <Content Include="StaticFiles\2183231105.jpg" />
-      <Content Include="StaticFiles\2184067995.jpg" />
-      <Content Include="StaticFiles\empty.jpg" />
-      <Content Include="StaticFiles\hppro.jpg" />
-      <Content Include="StaticFiles\iphone11.jpg" />
-      <Content Include="StaticFiles\iphonexr.jpg" />
-      <Content Include="StaticFiles\lgtv.jpg" />
-      <Content Include="StaticFiles\macbookpro13.jpg" />
-      <Content Include="StaticFiles\macbookpro16.jpg" />
-      <Content Include="StaticFiles\nokia72.jpg" />
-      <Content Include="StaticFiles\redmi5.jpg" />
-      <Content Include="StaticFiles\samsung10e.jpg" />
-      <Content Include="StaticFiles\sonytv.jpg" />
-      <Content Include="StaticFiles\xiaomimi10note.jpg" />
-      <Content Include="StaticFiles\xiaomimi9tpro.jpg" />
+      <Content Include="StaticFiles\*.*" />
     </ItemGroup>
 
 </Project>

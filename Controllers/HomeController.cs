@@ -1,22 +1,20 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using TechShop.Data;
 using TechShop.Models;
 
 namespace TechShop.Controllers
 {
     public class HomeController : Controller
     {
-        // private readonly ILogger<HomeController> _logger;
-        //
-        // public HomeController(ILogger<HomeController> logger)
-        // {
-        //     _logger = logger;
-        // }
+        private readonly RepositoryContainer _container = new();
 
         public IActionResult Index()
         {
-            return View();
+            ViewData["Categories"] = _container.CategoryRepository.Get();
+            var products = _container.ProductRepository.Get(includeProperties: "Image,Category");
+            ViewData["Products"] = products;
+            return View(products);
         }
 
         public IActionResult Privacy()

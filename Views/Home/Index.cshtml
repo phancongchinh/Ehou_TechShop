@@ -1,8 +1,17 @@
-﻿@{
+﻿@model IEnumerable<TechShop.Models.Entity.Product>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcomeeeee</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<br/>
+<div class="container">
+    <a href="/filter">Filtered search</a>
+</div>
+<br/>
+<div class="d-flex">
+    @foreach (var i in Model)
+    {
+        @await Html.PartialAsync("_CardProduct", i)
+    }
 </div>

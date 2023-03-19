@@ -18,8 +18,6 @@ namespace TechShop.Models.Entity
 
         public Image Image { get; set; }
         public Category Category { get; set; }
-
-        public ICollection<Image> Images { get; set; }
         public ICollection<ShoppingCartItem> ShoppingCarts { get; set; }
         public ICollection<PurchaseProduct> PurchaseProducts { get; set; }
 

@@ -11,10 +11,12 @@ namespace TechShop.Controllers
     {
         private RepositoryContainer _container = new();
 
+        [HttpGet]
+        [Authorize]
         [Route("account/info")]
         public IActionResult Info()
         {
-            if (!User.Identity.IsAuthenticated) return RedirectToAction("Index", "Home");
+            // if (!User.Identity.IsAuthenticated) return RedirectToAction("Index", "Home");
 
             var user = _container.UserRepository.Get(x => x.Email == User.Identity.Name, includeProperties: "Role")
                 .FirstOrDefault();
@@ -26,8 +28,7 @@ namespace TechShop.Controllers
                 Name = user.Name,
                 Phone = user.Phone,
                 Email = user.Email,
-                IsModerator = user.UserRole.Id == 1,
-                IsAdmin = user.UserRole.Id == 2,
+                IsAdmin = user.UserRole.Id == 1,
             };
 
             return View(model);
