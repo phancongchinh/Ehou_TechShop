@@ -7,4 +7,47 @@
 
 <h2>Shopping Cart</h2>
 
-<div>Empty cart!</div>
+<div class="container">
+    <table class="table">
+        <thead>
+        <tr>
+            <td>Name</td>
+            <td>Count</td>
+            <td>Price</td>
+            <td>Delete</td>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var i in Model)
+        {
+            <tr>
+                <td>
+                    <a href="/product/@i.ProductId">@i.Product.Name</a>
+                </td>
+                <td>
+                    <input class="count-form" max="999" min="1" type="number" data-id="@i.ProductId" value="@i.Count"/>
+                    <a class="btn btn-outline-dark count" href="/api/cart/add/@i.ProductId?count=#&redirect=@Context.Request.Path">Save</a>
+                </td>
+                <td>
+                    @(i.Product.Price * i.Count) $
+                </td>
+                <td>
+                    <a href="/api/cart/remove/@i.ProductId?&redirect=@Context.Request.Path">Remove</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    @if (ViewData["TotalPrice"] != null && (decimal) ViewData["TotalPrice"] != 0.0M)
+    {
+        <hr/>
+        <div class="container">
+            <h3 class="align-content-lg-end">
+                Price: @((decimal) ViewData["TotalPrice"]) $
+            </h3>
+        </div>
+        <div class="container">
+            <a class="btn btn-lg btn-success" href="/purchase">Make purchase</a>
+        </div>
+    }
+</div>

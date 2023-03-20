@@ -22,20 +22,5 @@ namespace TechShop.Controllers
 
             return View(user);
         }
-
-        [HttpGet]
-        [Authorize]
-        public IActionResult Purchases()
-        {
-            User user = _container.UserRepository.Get(x => x.Email == User.Identity.Name).FirstOrDefault();
-
-            if (user == null) return NotFound();
-
-            IEnumerable<Purchase> purchases = _container.PurchaseRepository.Get(x => x.UserId == user.Id,
-                    includeProperties: "PurchaseProducts.Product")
-                .OrderByDescending(x => x.CreationTime);
-
-            return View(purchases);
-        }
     }
 }

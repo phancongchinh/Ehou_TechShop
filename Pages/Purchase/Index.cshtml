@@ -1,0 +1,54 @@
+@model IEnumerable<TechShop.Models.Entity.Purchase>
+
+@{
+    ViewBag.Title = "Purchases";
+    Layout = "_Layout";
+}
+
+<h2>User Purchases</h2>
+
+<div>
+    <hr/>
+    @foreach (var i in Model)
+    {
+        <div class="row">
+            <h3>Purchase from @i.CreationTime date</h3>
+            <div class="row">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <td>Product name</td>
+                        <td>Count</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var j in i.PurchaseProducts)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-action="Index"
+                                   asp-controller="Product"
+                                   asp-route-id="@j.ProductId">
+                                    @j.Product.Name
+                                </a>
+                            </td>
+                            <td>
+                                @j.Count
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+
+                <hr>
+                <br>
+                <h4>
+                    Total price: @i.PurchaseProducts.Sum(x => x.Product.Price * x.Count)
+                </h4>
+            </div>
+        </div>
+        <br>
+        <hr>
+    }
+
+</div>

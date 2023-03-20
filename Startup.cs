@@ -24,12 +24,17 @@ namespace TechShop
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<AppDbContext>(options => {
+            services.AddDbContext<AppDbContext>(options =>
+            {
                 options.UseSqlServer(Configuration.GetConnectionString("MSSqlServer"));
             });
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                    .AddCookie(options => {options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");});
+                .AddCookie(options =>
+                {
+                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
+                });
         }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -42,6 +47,7 @@ namespace TechShop
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -56,13 +62,10 @@ namespace TechShop
                 FileProvider = new PhysicalFileProvider(folderPath),
                 RequestPath = "/StaticFiles"
             });
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
