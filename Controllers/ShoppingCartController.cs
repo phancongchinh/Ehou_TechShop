@@ -21,9 +21,6 @@ namespace TechShop.Controllers
             IEnumerable<ShoppingCartItem> shoppingCartItems = _container.ShoppingCartItemRepository
                 .Get(x => x.User.Email == User.Identity.Name, includeProperties: "User,Product")
                 .ToList();
-            var total = shoppingCartItems.Sum(x => x.Product.Price * x.Count);
-
-            ViewData.Add("TotalPrice", total);
 
             return View(shoppingCartItems);
         }
@@ -31,7 +28,7 @@ namespace TechShop.Controllers
         [HttpPost]
         [Authorize]
         [Route("/cart")]
-        public IActionResult UpdateCart(int productId, int count)
+        public IActionResult UpdateCart(int productId, int quantity, bool forceUpdateQuantity)
         {
             var product = _container.ProductRepository.GetById(productId);
 
@@ -41,10 +38,23 @@ namespace TechShop.Controllers
                 .Get(x => x.User.Email == User.Identity.Name && x.ProductId == productId,
                     includeProperties: "User").FirstOrDefault();
 
-            if (shoppingCartItem == null) return RedirectToAction("Index", "ShoppingCart");
+            User user = _container.UserRepository.Get(x => x.Email == User.Identity.Name).First();
+            if (shoppingCartItem == null)
+            {
+                _container.ShoppingCartItemRepository.Insert(new ShoppingCartItem()
+                {
+                    UserId = user.Id,
+                    ProductId = productId,
+                    Count = quantity
+                });
+            }
+            else
+            {
+                shoppingCartItem.Count = forceUpdateQuantity ? quantity : shoppingCartItem.Count + quantity;
+                _container.ShoppingCartItemRepository.Update(shoppingCartItem);
+            }
 
-            shoppingCartItem.Count = count;
-            _container.ShoppingCartItemRepository.Update(shoppingCartItem);
+            _container.Save();
 
             return RedirectToAction("Index", "ShoppingCart");
         }

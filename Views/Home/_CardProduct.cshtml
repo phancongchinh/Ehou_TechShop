@@ -7,17 +7,24 @@
             <a href="/product/@Html.DisplayFor(model => model.Id)">@Html.DisplayFor(model => model.Name)</a>
         </p>
         <p class="card-text">@Html.DisplayFor(model => model.Description)</p>
-        <div class="d-flex align-items-center">
-            <span class="card-text text-info">@string.Format("{0:C}", Model.Price)</span>
+        <div class="d-flex align-items-end">
+            <span class="fs-5 card-text text-success">@string.Format("{0:C}", Model.Price)</span>
+
             @if (Model.Quantity <= 0)
             {
                 <span class="text-danger ms-auto">Out of stock</span>
             }
-            else
+            else if (User.Identity.IsAuthenticated)
             {
-                <button class="btn btn-success ms-auto" asp-controller="" asp-action="">Add to cart</button>
+                <form class="ms-auto" method="post"
+                      asp-controller="ShoppingCart" asp-action="UpdateCart"
+                      asp-route-quantity="1" asp-route-productId="@Model.Id" asp-route-forceUpdateQuantity="false">
+                    <button
+                        class="btn btn-sm btn-success px-3">
+                        + <i class="fa fa-shopping-cart"></i>
+                    </button>
+                </form>
             }
         </div>
-        
     </div>
 </div>

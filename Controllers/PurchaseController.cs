@@ -26,5 +26,28 @@ namespace TechShop.Controllers
 
             return View(purchases);
         }
+
+        [HttpGet]
+        [Authorize]
+        [Route("/purchase/{id}")]
+        public IActionResult Info(int purchaseId)
+        {
+            var purchase = _container.PurchaseRepository.Get(x => x.User.Email == User.Identity.Name,
+                includeProperties: "User,PurchaseProducts.Product").FirstOrDefault();
+
+            if (purchase == null) return NotFound();
+
+            return View(purchase);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("/purchase")]
+        public IActionResult CreatePurchase(Purchase purchase)
+        {
+            _container.PurchaseRepository.Insert(purchase);
+            _container.Save();
+            return RedirectToAction("Index");
+        }
     }
 }

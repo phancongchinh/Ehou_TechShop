@@ -52,7 +52,7 @@ namespace TechShop.Data
 
         public void Update(T entityToUpdate)
         {
-            throw new NotImplementedException();
+            dbSet.Update(entityToUpdate);
         }
 
         public void Delete(object id)

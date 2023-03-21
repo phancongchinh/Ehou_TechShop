@@ -33,6 +33,9 @@ namespace TechShop
                 {
                     options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
                 });
+
+            // 403 handler for unauthorized requests
+            services.ConfigureApplicationCookie(options => { options.AccessDeniedPath = $"/"; });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
