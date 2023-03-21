@@ -2,7 +2,7 @@
 
 namespace TechShop.Data
 {
-    public class RepositoryContainer
+    public class UnitOfWork
     {
         private AppDbContext _context;
 
@@ -15,8 +15,7 @@ namespace TechShop.Data
         public readonly Repository<UserRole> UserRoleRepository;
         public readonly Repository<Image> ImageRepository;
 
-
-        public RepositoryContainer()
+        public UnitOfWork()
         {
             _context = AppDbContext.Init();
             UserRepository = new Repository<User>(_context);

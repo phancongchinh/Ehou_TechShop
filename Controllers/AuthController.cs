@@ -14,7 +14,7 @@ namespace TechShop.Controllers
 {
     public class AuthController : Controller
     {
-        private RepositoryContainer _container = new();
+        private UnitOfWork _unit = new();
 
         [HttpPost]
         private async Task Authenticate(User user)
@@ -44,7 +44,7 @@ namespace TechShop.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var user = _container.UserRepository
+            var user = _unit.UserRepository
                 .Get(x => x.Email == model.Email && x.PasswordHash == PasswordConverter.Hash(model.Password),
             includeProperties: "UserRole").FirstOrDefault();
             if (user != null)
@@ -76,7 +76,7 @@ namespace TechShop.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var user = _container.UserRepository.Get(x => x.Email == model.Email).FirstOrDefault();
+            var user = _unit.UserRepository.Get(x => x.Email == model.Email).FirstOrDefault();
             if (user == null)
             {
                 user = new User
@@ -86,11 +86,11 @@ namespace TechShop.Controllers
                     Email = model.Email,
                     PasswordHash = PasswordConverter.Hash(model.Password),
                 };
-                var userRole = _container.UserRoleRepository.Get(x => x.Id == 2).FirstOrDefault();
+                var userRole = _unit.UserRoleRepository.Get(x => x.Id == 2).FirstOrDefault();
                 if (userRole != null) user.UserRole = userRole;
 
-                _container.UserRepository.Insert(user);
-                _container.Save();
+                _unit.UserRepository.Insert(user);
+                _unit.Save();
 
                 await Authenticate(user);
                 return RedirectToAction("Index", "Home");

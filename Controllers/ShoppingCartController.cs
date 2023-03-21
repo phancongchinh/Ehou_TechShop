@@ -9,7 +9,7 @@ namespace TechShop.Controllers
 {
     public class ShoppingCartController : Controller
     {
-        private RepositoryContainer _container = new();
+        private UnitOfWork _unit = new();
 
         [HttpGet]
         [Authorize]
@@ -18,7 +18,7 @@ namespace TechShop.Controllers
         {
             if (!User.Identity.IsAuthenticated) return RedirectToActionPermanent("Index", "Home");
 
-            IEnumerable<ShoppingCartItem> shoppingCartItems = _container.ShoppingCartItemRepository
+            IEnumerable<ShoppingCartItem> shoppingCartItems = _unit.ShoppingCartItemRepository
                 .Get(x => x.User.Email == User.Identity.Name, includeProperties: "User,Product")
                 .ToList();
 
@@ -30,18 +30,18 @@ namespace TechShop.Controllers
         [Route("/cart")]
         public IActionResult UpdateCart(int productId, int quantity, bool forceUpdateQuantity)
         {
-            var product = _container.ProductRepository.GetById(productId);
+            var product = _unit.ProductRepository.GetById(productId);
 
             if (product == null) return NotFound();
 
-            var shoppingCartItem = _container.ShoppingCartItemRepository
+            var shoppingCartItem = _unit.ShoppingCartItemRepository
                 .Get(x => x.User.Email == User.Identity.Name && x.ProductId == productId,
                     includeProperties: "User").FirstOrDefault();
 
-            User user = _container.UserRepository.Get(x => x.Email == User.Identity.Name).First();
+            User user = _unit.UserRepository.Get(x => x.Email == User.Identity.Name).First();
             if (shoppingCartItem == null)
             {
-                _container.ShoppingCartItemRepository.Insert(new ShoppingCartItem()
+                _unit.ShoppingCartItemRepository.Insert(new ShoppingCartItem()
                 {
                     UserId = user.Id,
                     ProductId = productId,
@@ -51,10 +51,10 @@ namespace TechShop.Controllers
             else
             {
                 shoppingCartItem.Count = forceUpdateQuantity ? quantity : shoppingCartItem.Count + quantity;
-                _container.ShoppingCartItemRepository.Update(shoppingCartItem);
+                _unit.ShoppingCartItemRepository.Update(shoppingCartItem);
             }
 
-            _container.Save();
+            _unit.Save();
 
             return RedirectToAction("Index", "ShoppingCart");
         }

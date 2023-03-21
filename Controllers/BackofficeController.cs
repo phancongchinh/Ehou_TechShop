@@ -10,13 +10,13 @@ namespace TechShop.Controllers
     [Authorize(Roles = "Administrator")]
     public class BackofficeController : Controller
     {
-        private readonly RepositoryContainer _container = new();
+        private readonly UnitOfWork _unit = new();
 
         [HttpGet]
         [Route("/users")]
         public IActionResult Users()
         {
-            var purchases = _container.UserRepository.Get(includeProperties: "UserRole")
+            var purchases = _unit.UserRepository.Get(includeProperties: "UserRole")
                 .ToList();
             return View(purchases);
         }
@@ -25,7 +25,7 @@ namespace TechShop.Controllers
         [Route("/categories")]
         public IActionResult Categories()
         {
-            var purchases = _container.CategoryRepository.Get()
+            var purchases = _unit.CategoryRepository.Get()
                 .ToList();
             return View(purchases);
         }
@@ -34,7 +34,7 @@ namespace TechShop.Controllers
         [Route("/products")]
         public IActionResult Products()
         {
-            var purchases = _container.ProductRepository.Get()
+            var purchases = _unit.ProductRepository.Get()
                 .ToList();
             return View(purchases);
         }
@@ -43,7 +43,7 @@ namespace TechShop.Controllers
         [Route("/purchases")]
         public IActionResult Purchases()
         {
-            var purchases = _container.PurchaseRepository.Get(includeProperties: "User,PurchaseProducts.Product")
+            var purchases = _unit.PurchaseRepository.Get(includeProperties: "User,PurchaseProducts.Product")
                 .ToList();
             return View(purchases);
         }
@@ -52,11 +52,11 @@ namespace TechShop.Controllers
         [Route("/purchase")]
         public IActionResult UpdatePurchaseState(int purchaseId, int state)
         {
-            var purchase = _container.PurchaseRepository.GetById(purchaseId);
+            var purchase = _unit.PurchaseRepository.GetById(purchaseId);
             if (purchase == null) return NotFound();
 
             purchase.PurchaseState = (PurchaseState) state;
-            _container.Save();
+            _unit.Save();
             return RedirectToAction("Purchases");
         }
     }

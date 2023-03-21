@@ -7,14 +7,14 @@ namespace TechShop.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly RepositoryContainer _container = new();
+        private readonly UnitOfWork _unit = new();
 
         [HttpGet]
         public IActionResult Index()
         {
-            var products = _container.ProductRepository.Get(includeProperties: "Image,Category");
+            var products = _unit.ProductRepository.Get(includeProperties: "Image,Category");
             ViewData["Products"] = products;
-            ViewData["Categories"] = _container.CategoryRepository.Get();
+            ViewData["Categories"] = _unit.CategoryRepository.Get();
             return View(products);
         }
 

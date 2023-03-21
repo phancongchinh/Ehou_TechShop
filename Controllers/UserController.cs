@@ -8,13 +8,13 @@ namespace TechShop.Controllers
 {
     public class UserController : Controller
     {
-        private RepositoryContainer _container = new();
+        private UnitOfWork _unit = new();
 
         [HttpGet]
         [Authorize]
         public IActionResult Info()
         {
-            User user = _container.UserRepository.Get(x => x.Email == User.Identity.Name, includeProperties: "UserRole")
+            User user = _unit.UserRepository.Get(x => x.Email == User.Identity.Name, includeProperties: "UserRole")
                 .FirstOrDefault();
 
             if (user == null) return NotFound();
