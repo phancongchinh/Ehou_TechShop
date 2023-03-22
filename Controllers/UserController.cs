@@ -8,10 +8,11 @@ namespace TechShop.Controllers
 {
     public class UserController : Controller
     {
-        private UnitOfWork _unit = new();
+        private readonly UnitOfWork _unit = new();
 
         [HttpGet]
         [Authorize]
+        [Route("/info")]
         public IActionResult Info()
         {
             User user = _unit.UserRepository.Get(x => x.Email == User.Identity.Name, includeProperties: "UserRole")

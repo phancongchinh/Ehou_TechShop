@@ -1,5 +1,4 @@
-﻿@inject IJsonHelper Json;
-@model IEnumerable<TechShop.Models.Entity.ShoppingCartItem>
+﻿@model IEnumerable<TechShop.Models.Entity.ShoppingCartItem>
 
 @{
     ViewBag.Title = "Shopping Cart";
@@ -9,57 +8,75 @@
 <h2>Your cart</h2>
 
 <div class="container">
-    <table class="table">
-        <thead>
-        <tr>
-            <td class="col-5">Name</td>
-            <td class="col-3">Quantity</td>
-            <td class="col-2">Price</td>
-            <td class="col-2">Delete</td>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var i in Model)
-        {
+    @if (!Model.Any())
+    {
+        <div class="mt-5">
+            <p>Your cart is empty!</p>
+            <div class="col-2">
+                <a class="btn btn-primary" href="/">Add more items</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
             <tr>
-                <td>
-                    <a href="/product/@i.ProductId">@i.Product.Name</a>
-                </td>
-                <td>
-                    <form class="d-flex" asp-action="UpdateCart" method="post">
-                        <input type="text" hidden name="forceUpdateQuantity" value="true">
-                        <input type="text" hidden name="productId" value="@i.ProductId">
-                        <input class="form-control" max="999" min="1" type="number" style="width: 80px" name="quantity"
-                               data-id="@i.ProductId" value="@i.Count"/>
-                        <button class="btn btn-outline-secondary ms-2">Save</button>
-                    </form>
-                </td>
-                <td>
-                    @(i.Product.Price * i.Count) $
-                </td>
-                <td>
-                    <a href="/api/cart/remove/@i.ProductId?&redirect=@Context.Request.Path">Remove</a>
-                </td>
+                <td class="col-5">Name</td>
+                <td class="col-3">Quantity</td>
+                <td class="col-2">Price</td>
+                <td class="col-2">Delete</td>
             </tr>
-        }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @foreach (var i in Model)
+            {
+                <tr>
+                    <td>
+                        <a href="/products/@i.ProductId">@i.Product.Name</a>
+                    </td>
+                    <td>
+                        <form class="d-flex" asp-action="UpdateCart" method="post">
+                            <input type="text" hidden name="forceUpdateQuantity" value="true">
+                            <input type="text" hidden name="productId" value="@i.ProductId">
+                            <input class="form-control" max="999" min="1" type="number" style="width: 80px" name="quantity"
+                                   data-id="@i.ProductId" value="@i.Count"/>
+                            <button type="submit" class="btn btn-outline-secondary ms-2">Save</button>
+                        </form>
+                    </td>
+                    <td>
+                        @(i.Product.Price * i.Count) $
+                    </td>
+                    <td>
+                        <form class="d-flex" asp-action="RemoveItem" method="post">
+                            <input type="text" hidden name="productId" value="@i.ProductId">
+                            <button type="submit" class="btn btn-link p-0">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
 
-    <hr/>
+        <hr/>
 
-    <div class="container d-flex flex-row align-items-end">
-        <div class="col-2">
-            <a class="btn btn-primary" href="/">Add more items</a>
+        <div class="container d-flex flex-row align-items-end">
+            <div class="col-2">
+                <a class="btn btn-primary" href="/">Add more items</a>
+            </div>
+
+            <div class="col-2 ms-auto">
+                <h5 class="align-content-lg-end">
+                    Total: $ @Model.Sum(x => x.Count * x.Product.Price)
+                </h5>
+            </div>
+
+            <div class="col-2">
+                <form method="post" asp-controller="Purchase" asp-action="CreatePurchase">
+                    <button type="submit" class="btn btn-success">Make purchase</button>
+                </form>
+            </div>
         </div>
+    }
 
-        <div class="col-2 ms-auto">
-            <h5 class="align-content-lg-end">
-                Total: $ @Model.Sum(x => x.Count * x.Product.Price)
-            </h5>
-        </div>
-
-        <div class="col-2">
-            <a class="btn btn-success" href="/purchase">Make purchase</a>
-        </div>
-    </div>
 </div>

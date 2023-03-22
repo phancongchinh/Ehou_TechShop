@@ -5,50 +5,35 @@
     Layout = "_Layout";
 }
 
-<h2>User Purchases</h2>
+<h2>Your Purchases</h2>
 
-<div>
-    <hr/>
-    @foreach (var i in Model)
-    {
-        <div class="row">
-            <h3>Purchase from @i.CreationTime date</h3>
-            <div class="row">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <td>Product name</td>
-                        <td>Count</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var j in i.PurchaseProducts)
-                    {
-                        <tr>
-                            <td>
-                                <a asp-action="Index"
-                                   asp-controller="Product"
-                                   asp-route-id="@j.ProductId">
-                                    @j.Product.Name
-                                </a>
-                            </td>
-                            <td>
-                                @j.Count
-                            </td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-
-                <hr>
-                <br>
-                <h4>
-                    Total price: @i.PurchaseProducts.Sum(x => x.Product.Price * x.Count)
-                </h4>
-            </div>
-        </div>
-        <br>
-        <hr>
-    }
-
+<div class="container">
+    <div class="row">
+        <table class="table">
+            <thead>
+            <tr>
+                <td class="col-2">Purchase No.</td>
+                <td class="col-3">Created at</td>
+                <td class="col-3">State</td>
+                <td class="col-2">Total price</td>
+                <td class="col-2"></td>
+            </tr>
+            </thead>
+            <tbody>
+            
+            @foreach (var i in Model)
+            {
+                <tr>
+                    <td>@i.Id</td>
+                    <td>@i.CreationTime</td>
+                    <td>@i.State</td>
+                    <td>@i.PurchaseProducts.Sum(x => x.Price)</td>
+                    <td class="col-3">
+                        <a href="/purchase/info?purchaseId=@i.Id">Details</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
 </div>

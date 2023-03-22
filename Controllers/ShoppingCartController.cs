@@ -27,7 +27,6 @@ namespace TechShop.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/cart")]
         public IActionResult UpdateCart(int productId, int quantity, bool forceUpdateQuantity)
         {
             var product = _unit.ProductRepository.GetById(productId);
@@ -54,6 +53,22 @@ namespace TechShop.Controllers
                 _unit.ShoppingCartItemRepository.Update(shoppingCartItem);
             }
 
+            _unit.Save();
+
+            return RedirectToAction("Index", "ShoppingCart");
+        }
+        
+        [HttpPost]
+        [Authorize]
+        public IActionResult RemoveItem(int productId)
+        {
+            var shoppingCartItem = _unit.ShoppingCartItemRepository
+                .Get(x => x.User.Email == User.Identity.Name && x.ProductId == productId,
+                    includeProperties: "User").FirstOrDefault();
+
+            if (shoppingCartItem == null) return RedirectToAction("Index", "ShoppingCart");
+            
+            _unit.ShoppingCartItemRepository.Delete(shoppingCartItem);
             _unit.Save();
 
             return RedirectToAction("Index", "ShoppingCart");

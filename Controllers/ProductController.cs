@@ -9,7 +9,7 @@ namespace TechShop.Controllers
         private readonly UnitOfWork _unit = new();
 
         [HttpGet]
-        [Route("Product/{id}")]
+        [Route("products/{id}")]
         public IActionResult Index(int? id)
         {
             if (id == null) return RedirectToAction("Index", "Home");

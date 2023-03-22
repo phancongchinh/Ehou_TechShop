@@ -6,14 +6,13 @@ using TechShop.Models.Entity;
 
 namespace TechShop.Controllers
 {
-    [Route("/backoffice")]
     [Authorize(Roles = "Administrator")]
     public class BackofficeController : Controller
     {
         private readonly UnitOfWork _unit = new();
 
         [HttpGet]
-        [Route("/users")]
+        [Route("/backoffice/users")]
         public IActionResult Users()
         {
             var purchases = _unit.UserRepository.Get(includeProperties: "UserRole")
@@ -22,7 +21,7 @@ namespace TechShop.Controllers
         }
         
         [HttpGet]
-        [Route("/categories")]
+        [Route("/backoffice/categories")]
         public IActionResult Categories()
         {
             var purchases = _unit.CategoryRepository.Get()
@@ -31,7 +30,7 @@ namespace TechShop.Controllers
         }
 
         [HttpGet]
-        [Route("/products")]
+        [Route("/backoffice/products")]
         public IActionResult Products()
         {
             var purchases = _unit.ProductRepository.Get()
@@ -40,7 +39,7 @@ namespace TechShop.Controllers
         }
 
         [HttpGet]
-        [Route("/purchases")]
+        [Route("/backoffice/purchases")]
         public IActionResult Purchases()
         {
             var purchases = _unit.PurchaseRepository.Get(includeProperties: "User,PurchaseProducts.Product")
@@ -49,13 +48,12 @@ namespace TechShop.Controllers
         }
         
         [HttpPost]
-        [Route("/purchase")]
-        public IActionResult UpdatePurchaseState(int purchaseId, int state)
+        public IActionResult UpdatePurchaseState(int purchaseId, string state)
         {
             var purchase = _unit.PurchaseRepository.GetById(purchaseId);
             if (purchase == null) return NotFound();
 
-            purchase.PurchaseState = (PurchaseState) state;
+            purchase.State = state;
             _unit.Save();
             return RedirectToAction("Purchases");
         }

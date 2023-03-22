@@ -7,9 +7,9 @@ namespace TechShop.Models.Entity
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public PurchaseState PurchaseState;
+        public string State { get; set; }
         public DateTime CreationTime { get; set; }
-        
+
         public User User { get; set; }
         public IEnumerable<PurchaseProduct> PurchaseProducts { get; set; }
     }

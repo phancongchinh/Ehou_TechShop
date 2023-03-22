@@ -77,3 +77,8 @@ _[Ss]cripts
 # Local IDE
 .idea/
 .vs/
+######################
+# Configurations
+appsettings.json
+appsettings.Development.json
+Properties/launchSettings.json

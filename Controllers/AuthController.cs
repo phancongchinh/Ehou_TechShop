@@ -14,7 +14,7 @@ namespace TechShop.Controllers
 {
     public class AuthController : Controller
     {
-        private UnitOfWork _unit = new();
+        private readonly UnitOfWork _unit = new();
 
         [HttpPost]
         private async Task Authenticate(User user)

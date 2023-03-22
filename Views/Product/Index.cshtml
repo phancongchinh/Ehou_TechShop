@@ -7,4 +7,53 @@
 
 <h2>Product Information</h2>
 
-<h4>@Model.Name</h4>
+<div class="container">
+    <h5 class="mt-5">@Model.Name</h5>
+
+    <div class="row mt-5">
+        <div class="col-4">
+            <img src="/image/@Html.DisplayFor(model => model.Image.Path)" class="card-img-top" alt="Model picture"/>
+        </div>
+        <div class="col-8 d-flex flex-column">
+            <div class="row my-2">
+                <div class="col-2">Category</div>
+                <div class="col-8">@Model.Category.Name</div>
+            </div>
+            <div class="row my-2">
+                <div class="col-2">Price</div>
+                <div class="col-8 text-success">$ @Model.Price</div>
+            </div>
+            <div class="row my-2">
+                <div class="col-2">Description</div>
+                <div class="col-8">@Model.Description</div>
+            </div>
+            @if (Model.Quantity <= 0)
+            {
+                <div class="row my-2">
+                    <div class="text-danger ms-auto">Out of stock</div>
+                </div>
+            }
+            else
+            {
+                <div class="row my-2">
+                    <div class="col-2">Stock</div>
+                    <div class="col-8">@Model.Quantity</div>
+                </div>
+            }
+
+
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <form class="mt-auto" method="post"
+                      asp-controller="ShoppingCart" asp-action="UpdateCart"
+                      asp-route-quantity="1" asp-route-productId="@Model.Id" asp-route-forceUpdateQuantity="false">
+                    <button
+                        class="btn btn-sm btn-success px-3">
+                        Add to cart <i class="ms-2 fa fa-shopping-cart"></i>
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</div>
