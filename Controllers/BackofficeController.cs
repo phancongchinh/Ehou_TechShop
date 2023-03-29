@@ -94,13 +94,18 @@ namespace TechShop.Controllers
                 .FirstOrDefault();
             if (id != null && User.Identity.IsAuthenticated && user.UserRole.Name == "Administrator")
             {
-                var shopingCart = _unit.ShoppingCartItemRepository.Get(x => x.ProductId == id).FirstOrDefault();
-                if (shopingCart == null)
+                var shopingCart = _unit.ShoppingCartItemRepository.Get(x => x.ProductId == id).ToList(); 
+                if (shopingCart != null)
                 {
-                    _unit.ProductRepository.Delete((int)id);
-                    _unit.Save();
+                    for (int i = 0; i < shopingCart.Count; i++)
+                    {
+                        _unit.ShoppingCartItemRepository.Delete(shopingCart[i]);
+                        _unit.Save();
+                    }
                 }
-              
+                _unit.ProductRepository.Delete((int)id);
+                _unit.Save();
+
             }
             return Redirect(redirect);
 

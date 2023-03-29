@@ -4,7 +4,217 @@
     ViewBag.Title = "Product";
     Layout = "_Layout";
 }
+<style>
 
-<h2>Product Information</h2>
+    .article {
+        display: flex;
+        flex-wrap: wrap;
+    }
 
-<h4>@Model.Name</h4>
+        .article > * {
+            padding: 8px 0;
+            margin: auto;
+            width: clamp(400px, 40%, 100%);
+            text-align: center;
+        }
+
+    .dot {
+        height: 15px;
+        width: 15px;
+        background-color: rgb(34 34 34);
+        border-radius: 50px;
+        display: inline-block;
+        margin: 15px;
+        cursor: pointer;
+        transition: 0.5s;
+    }
+
+    .carousel,
+    .achats {
+        width: clamp(200px, 100%, 400px);
+    }
+
+        .carousel > .img {
+            aspect-ratio: 1/1;
+            scroll-behavior: smooth;
+            overflow: hidden;
+            display: flex;
+        }
+
+            .carousel > .img > img {
+                transition: 0.5s;
+            }
+
+    .stars > * {
+        fill: #5397b4;
+        width: 20px;
+    }
+
+    #buttonCard {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        background-color: rgb(34 34 34);
+        color: white;
+        font-size: 25px;
+        transition: 0.5s ease;
+    }
+
+        #buttonCard:hover {
+            transform: scale(1.1);
+            transition: 0.5s ease;
+        }
+
+    .tech {
+        border-top: 1px solid rgb(200 200 200);
+        display: block;
+        text-align: center;
+    }
+
+        .tech > .grid > svg {
+            height: 80px;
+            width: 80px;
+            fill: rgb(34 34 34);
+        }
+
+        .tech > .grid {
+            display: grid;
+            grid-gap: 30px;
+            grid: auto auto auto / auto auto auto auto;
+            width: clamp(100px, 100%, 700px);
+            margin: auto;
+            overflow: auto;
+        }
+
+            .tech > .grid > * {
+                margin: auto;
+            }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgb(200, 200, 200);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgb(60, 60, 60);
+        border-radius: 360px;
+    }
+
+    .description > p {
+        line-height: 30px;
+        text-align: justify;
+    }
+
+    .description > h2 {
+        line-height: 40px;
+    }
+
+</style>
+
+
+
+
+<div class="container">
+    <div class="article">
+        <div class="carousel">
+            <div class="img">
+                <img class="h-100" src="/image/@Model.Image.Path" />
+            </div>
+            <div class="span-cont"></div>
+        </div>
+        <div class="description">
+            <h2>@Model.Name</h2>
+            <dl class="row">
+                <dt class="col-sm-2">
+                    Brand
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.Producer
+                </dd>
+                <dt class="col-sm-2">
+                    Model
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.Model
+                </dd>
+                <dt class="col-sm-2">
+                    Description
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.Description
+                </dd>
+                <dt class="col-sm-2">
+                    Category
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.Category.Name
+                </dd>
+                <dt class="col-sm-2">
+                    Price
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.Price
+                </dd>
+                <div class="d-flex align-items-end">
+                    @if (Model.Quantity <= 0)
+                    {
+                        <span class="text-danger ms-auto">Out of stock</span>
+                    }
+                    else if (User.Identity.IsAuthenticated)
+                    {
+                        <form class="ms-auto" method="post"
+                              asp-controller="ShoppingCart" asp-action="UpdateCart"
+                              asp-route-quantity="1" asp-route-productId="@Model.Id" asp-route-forceUpdateQuantity="false">
+                            <button class="btn btn-sm btn-success px-3">
+                                Add to shopping cart
+                            </button>
+                        </form>
+                    }
+                </div>
+
+            </dl>
+
+        </div>
+        <div class="achats">
+            <p class="stars">
+                <svg viewBox="0 0 576 512">
+                    <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z" />
+                </svg>
+                <svg viewBox="0 0 576 512">
+                    <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z" />
+                </svg>
+                <svg viewBox="0 0 576 512">
+                    <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z" />
+                </svg>
+                <svg viewBox="0 0 576 512">
+                    <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z" />
+                </svg>
+                <svg viewBox="0 0 536 512">
+                    <path d="M508.55 171.51L362.18 150.2 296.77 17.81C290.89 5.98 279.42 0 267.95 0c-11.4 0-22.79 5.9-28.69 17.81l-65.43 132.38-146.38 21.29c-26.25 3.8-36.77 36.09-17.74 54.59l105.89 103-25.06 145.48C86.98 495.33 103.57 512 122.15 512c4.93 0 10-1.17 14.87-3.75l130.95-68.68 130.94 68.7c4.86 2.55 9.92 3.71 14.83 3.71 18.6 0 35.22-16.61 31.66-37.4l-25.03-145.49 105.91-102.98c19.04-18.5 8.52-50.8-17.73-54.6zm-121.74 123.2l-18.12 17.62 4.28 24.88 19.52 113.45-102.13-53.59-22.38-11.74.03-317.19 51.03 103.29 11.18 22.63 25.01 3.64 114.23 16.63-82.65 80.38z" />
+                </svg>
+            </p>
+            <p>
+                @Model.Price $
+            </p>
+            
+
+
+           @* @if (User.Identity.IsAuthenticated)
+            {
+                @if (Model.InShopingCart)
+                {
+                    <p>Is already in shopping cart</p>
+                    <a class="btn btn-dark" href="/api/cart/remove/@Model.Product.Id?redirect=@Context.Request.Path">Remove from shopping cart</a>
+                }
+                else
+                {
+                    <a class="btn btn-success" href="/api/cart/add/@Model.Product.Id?redirect=@Context.Request.Path">Add to shopping cart</a>
+                }
+            }*@
+        </div>
+    </div>
+</div>

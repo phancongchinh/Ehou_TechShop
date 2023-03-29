@@ -1,6 +1,6 @@
 ﻿@model TechShop.Models.Entity.Product
 
-<div class="card m-4" style="width: 20%">
+@*<div class="card m-4" style="width: 20%">
     <img src="/image/@Html.DisplayFor(model => model.Image.Path)" class="card-img-top" alt="Model picture"/>
     <div class="card-body">
         <p class="card-title card-link">
@@ -25,6 +25,36 @@
                     </button>
                 </form>
             }
+        </div>
+    </div>
+</div>*@
+
+
+
+
+<div class="col-sm-6 col-md-4 col-lg-4">
+    <div class="box">
+        <div class="option_container">
+            <div class="options">
+                <div class="options">
+                @*    <form class="ms-auto" method="post"
+                          asp-controller="ShoppingCart" asp-action="UpdateCart"
+                          asp-route-quantity="1" asp-route-productId="@Model.Id" asp-route-forceUpdateQuantity="false">*@
+                    <a type="button" href="/product/@Html.DisplayFor(model => model.Id)">View detail</a>
+@*                    </form>
+*@                </div>
+            </div>
+        </div>
+        <div class="img-box">
+            <img src="/image/@Html.DisplayFor(model => model.Image.Path)" alt="">
+        </div>
+        <div class="detail-box">
+            <h5>
+                @Html.DisplayFor(model => model.Name)
+            </h5>
+            <h6>
+                @string.Format("{0:C}", Model.Price)
+            </h6>
         </div>
     </div>
 </div>
