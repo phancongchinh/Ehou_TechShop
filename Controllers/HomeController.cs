@@ -12,7 +12,7 @@ namespace TechShop.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var products = _unit.ProductRepository.Get(includeProperties: "Image,Category");
+            var products = _unit.ProductRepository.Get(x=> x.IsDeleted == false, includeProperties: "Image,Category");
             ViewData["Products"] = products;
             ViewData["Categories"] = _unit.CategoryRepository.Get();
             return View(products);

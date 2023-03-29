@@ -19,17 +19,11 @@
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
-                    @if (User.Identity != null && User.IsInRole("Administrator"))
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Backoffice" asp-action="Purchases">Backoffice</a>
-                        </li>
-                    }
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
                         <li class="nav-item ms-auto">
                             <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Info">
-                                Hello, @User.Identity.Name
+                                Hello, <span class="text-primary">@User.Identity.Name</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -45,6 +39,10 @@
                     else
                     {
                         <li class="nav-item ms-auto">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Register">Register</a>
+                        </li>
+
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
                         </li>
                     }
@@ -53,11 +51,37 @@
         </div>
     </nav>
 </header>
-<div class="container">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
+
+<div class="d-flex">
+    <div class="sidebar-menu d-flex flex-column px-4">
+        @if (User.Identity != null && User.IsInRole("Administrator"))
+        {
+            <ul class="nav flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                <li class="nav-item my-2"><h5><b>Management</b></h5></li>
+                <li class="nav-item">
+                    <a href="/admin/users" class="nav-link align-middle px-0"> Users </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/products" class="nav-link align-middle px-0"> Products </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/categories" class="nav-link align-middle px-0"> Categories </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/purchases" class="nav-link align-middle px-0"> Purchases </a>
+                </li>
+            </ul>
+        }
+
+    </div>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
 </div>
+
 
 <footer class="border-top footer fixed-bottom text-muted">
     <div class="container">
@@ -66,6 +90,16 @@
 </footer>
 
 <style>
+.sidebar-menu {
+    width: 18vw;
+    max-width: 18vw;
+    min-width: 18vw;
+}
+
+.container {
+    margin-left: unset;
+}
+
 .footer {
     height: 60px;
     display: flex;

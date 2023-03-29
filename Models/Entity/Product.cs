@@ -14,6 +14,7 @@ namespace TechShop.Models.Entity
         public string Description { get; set; }
         public int Quantity { get; set; }
         public int ImageId { get; set; }
+        public bool IsDeleted { get; set; }
 
         public Image Image { get; set; }
         public Category Category { get; set; }

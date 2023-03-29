@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,33 +10,34 @@ using TechShop.Models.Entity;
 
 namespace TechShop.Controllers
 {
-    [Route("/backoffice")]
+    
     [Authorize(Roles = "Administrator")]
     public class BackofficeController : Controller
     {
         private readonly UnitOfWork _unit = new();
 
+        /* List all users */
         [HttpGet]
         [Route("/admin/users")]
         public IActionResult Users()
         {
-            var purchases = _unit.UserRepository.Get(includeProperties: "UserRole")
-                .ToList();
-            return View(purchases);
+            var users = _unit.UserRepository.Get(includeProperties: "UserRole").ToList();
+            return View("Users", users);
         }
-        
+
+        /* List all categories */
         [HttpGet]
         [Route("/admin/categories")]
         public IActionResult Categories()
         {
-            var purchases = _unit.CategoryRepository.Get()
-                .ToList();
-            return View(purchases);
+            var categories = _unit.CategoryRepository.Get().ToList();
+            return View("Categories", categories);
         }
 
+        /* List all product */
         [HttpGet]
         [Route("/admin/products")]
-        public IActionResult AdminProducts()
+        public IActionResult Products()
         {
             User user = _unit.UserRepository.Get(x => x.Email == User.Identity.Name, includeProperties: "UserRole")
                 .FirstOrDefault();
@@ -44,140 +46,174 @@ namespace TechShop.Controllers
             if (user.UserRole.Name != "Administrator")
                 return RedirectToAction("Index", "Home");
 
-            var products = _unit.ProductRepository.Get(includeProperties: "Image,Category");
+            var products = _unit.ProductRepository.Get(x => x.IsDeleted == false, includeProperties: "Image,Category");
             ViewData["Products"] = products;
             ViewData["Categories"] = _unit.CategoryRepository.Get();
             return View("Products", products);
         }
 
+        /* Create new product */
         [HttpGet]
-        [Route("/admin/products/edit/{id}")]
-        public IActionResult EditProduct(int? id)
+        [Route("/admin/products/new")]
+        public IActionResult AddNewProduct()
         {
-            Product product = null;
-            if (id != null)
+            return View("AddNewProduct", new ProductEditModel());
+        }
+
+        /* Update product information */
+        [HttpGet]
+        [Route("/admin/products/{id}")]
+        public IActionResult EditProduct(int id)
+        {
+            var product = _unit.ProductRepository.Get(x => x.Id == id && x.IsDeleted == false, includeProperties: "Category,Image")
+                .FirstOrDefault();
+
+            if (product == null) return NotFound();
+
+            ProductEditModel model = new()
             {
-                product = _unit
-                    .ProductRepository
-                    .Get(x => x.Id == id, includeProperties: "Category,Image")
-                    .FirstOrDefault();
-            }
-            ProductEditModel model = new ProductEditModel();
-           if (product != null)
-           {
-                model.Model = product.Model;
-                model.Producer = product.Producer;
-                model.Price = product.Price;
-                model.Id = product.Id;
-                model.Description = product.Description;
-                model.ImageName = product.Image?.Path;
-                model.Quantity = product.Quantity;
-                var categories = _unit.CategoryRepository.Get().ToList();
-                var sel = categories.Where(x => x.Id == product.CategoryId).FirstOrDefault();
-                var sellist = new SelectList(categories, "Id", "Name", sel);
-                model.Categories = sellist;
-           }
-           else
-            {
-                model.Categories = new SelectList(_unit.CategoryRepository.Get().ToList(), "Id", "Name");
-            }
+                Model = product.Model,
+                Producer = product.Producer,
+                Price = product.Price,
+                Id = product.Id,
+                Description = product.Description,
+                ImageName = product.Image.Path,
+                Quantity = product.Quantity
+            };
+
+            var categories = _unit.CategoryRepository.Get().ToList();
+            var select = categories.FirstOrDefault(x => x.Id == product.CategoryId);
+            var selectList = new SelectList(categories, "Id", "Name", select);
+            model.Categories = selectList;
 
             return View("ProductsEdit", model);
         }
 
         [HttpGet]
         [Route("/admin/products/remove/{id}")]
-        public IActionResult RemoveProduct(int? id, [FromQuery(Name = "redirect")] string redirect)
+        public IActionResult RemoveProduct(int id)
         {
-            var user = _unit
-                .UserRepository.Get(x => x.Email == User.Identity.Name, includeProperties: "UserRole")
-                .FirstOrDefault();
-            if (id != null && User.Identity.IsAuthenticated && user.UserRole.Name == "Administrator")
-            {
-                var shopingCart = _unit.ShoppingCartItemRepository.Get(x => x.ProductId == id).FirstOrDefault();
-                if (shopingCart == null)
-                {
-                    _unit.ProductRepository.Delete((int)id);
-                    _unit.Save();
-                }
-              
-            }
-            return Redirect(redirect);
+            var product = _unit.ProductRepository.Get(x => x.Id == id).FirstOrDefault();
 
+            if (product == null) return NotFound();
+
+            product.IsDeleted = true;
+
+            _unit.ProductRepository.Update(product);
+            _unit.Save();
+
+            return RedirectToAction("Products", "Backoffice");
         }
 
 
-        public async Task<IActionResult> SaveAsync(ProductEditModel edit)
+        public async Task<IActionResult> SaveAsync(ProductEditModel editModel)
         {
+            var product = _unit.ProductRepository.Get(x => x.Id == editModel.Id).FirstOrDefault();
 
-            var user = _unit
-                .UserRepository.Get(x => x.Email == User.Identity.Name)
-                .FirstOrDefault();
-            if (user != null)
-            {
-                Product product = null;
-                if (edit.Id != 0)
-                {
-                    product = _unit
-                        .ProductRepository
-                        .Get(x => x.Id == edit.Id)
-                        .FirstOrDefault();
-                }
+            if (product == null) return NotFound();
+            
+            
+            // Product product = null;
+            // if (edit.Id != 0)
+            // {
+            //     product = _unit
+            //         .ProductRepository
+            //         .Get(x => x.Id == edit.Id)
+            //         .FirstOrDefault();
+            // }
 
-                var category = int.Parse(Request.Form["Categories"].ToString());
-                if (product != null)
-                {
-                    if (edit.Image != null)
-                    {
-                        var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", edit.Image.FileName);
-                        await edit.Image.CopyToAsync(new FileStream(path, FileMode.Create));
-                        _unit.ImageRepository.Insert(new Image() { Path = edit.Image.FileName });
-                        _unit.Save();
-                        product.ImageId = _unit.ImageRepository.Get(x => x.Path == edit.Image.FileName).FirstOrDefault().Id;
-                    }
-                    product.Model = edit.Model;
-                    product.Producer = edit.Producer;
-                    product.Price = edit.Price;
-                    product.Description = edit.Description;
-                    product.CategoryId = category;
-                    product.Quantity = edit.Quantity;
-                    _unit
-                        .ProductRepository
-                        .Update(product);
-                    _unit.Save();
-                }
-                else
-                {
-                    int id = 7;
-                    if (edit.Image != null)
-                    {
-                        edit.Image = edit.Image;
-                        var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", edit.Image.FileName);
-                        await edit.Image.CopyToAsync(new FileStream(path, FileMode.Create));
-                        _unit.ImageRepository.Insert(new Image() { Path = edit.Image.FileName });
-                        _unit.Save();
-                        id = _unit.ImageRepository.Get(x => x.Path == edit.Image.FileName).FirstOrDefault().Id;
-                    }
-                    product = new Product()
-                    {
-                        Model = edit.Model,
-                        Producer = edit.Producer,
-                        Price = edit.Price,
-                        Description = edit.Description,
-                        CategoryId = category,
-                        ImageId = id,
-                        Quantity = edit.Quantity,
-                    };
+            var category = int.Parse(Request.Form["Categories"].ToString());
+            
+            // if (editModel.Image != null)
+            // {
+            //     var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", editModel.Image.FileName);
+            //     await editModel.Image.CopyToAsync(new FileStream(path, FileMode.Create));
+            //     _unit.ImageRepository.Insert(new Image() {Path = editModel.Image.FileName});
+            //     _unit.Save();
+            //     product.ImageId = _unit.ImageRepository.Get(x => x.Path == editModel.Image.FileName).FirstOrDefault()
+            //         .Id;
+            // }
+            
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", editModel.Image.FileName);
+            await editModel.Image.CopyToAsync(new FileStream(path, FileMode.Create));
+            _unit.ImageRepository.Insert(new Image() {Path = editModel.Image.FileName});
+            _unit.Save();
+            product.ImageId = _unit.ImageRepository.Get(x => x.Path == editModel.Image.FileName).FirstOrDefault()
+                .Id;
 
-                    _unit
-                        .ProductRepository
-                        .Insert(product);
-                    _unit.Save();
-                }
+            product.Model = editModel.Model;
+            product.Producer = editModel.Producer;
+            product.Price = editModel.Price;
+            product.Description = editModel.Description;
+            product.CategoryId = category;
+            product.Quantity = editModel.Quantity;
+            _unit.ProductRepository.Update(product);
+            _unit.Save();
+            
+            // if (product != null)
+            // {
+            //     if (editModel.Image != null)
+            //     {
+            //         var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", editModel.Image.FileName);
+            //         await editModel.Image.CopyToAsync(new FileStream(path, FileMode.Create));
+            //         _unit.ImageRepository.Insert(new Image() {Path = editModel.Image.FileName});
+            //         _unit.Save();
+            //         product.ImageId = _unit.ImageRepository.Get(x => x.Path == editModel.Image.FileName).FirstOrDefault()
+            //             .Id;
+            //     }
+            //
+            //     product.Model = editModel.Model;
+            //     product.Producer = editModel.Producer;
+            //     product.Price = editModel.Price;
+            //     product.Description = editModel.Description;
+            //     product.CategoryId = category;
+            //     product.Quantity = editModel.Quantity;
+            //     _unit
+            //         .ProductRepository
+            //         .Update(product);
+            //     _unit.Save();
+            // }
+            // else
+            // {
+            //     int id = 7;
+            //     if (editModel.Image != null)
+            //     {
+            //         editModel.Image = editModel.Image;
+            //         var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", editModel.Image.FileName);
+            //         await editModel.Image.CopyToAsync(new FileStream(path, FileMode.Create));
+            //         _unit.ImageRepository.Insert(new Image() {Path = editModel.Image.FileName});
+            //         _unit.Save();
+            //         id = _unit.ImageRepository.Get(x => x.Path == editModel.Image.FileName).FirstOrDefault().Id;
+            //     }
+            //
+            //     product = new Product()
+            //     {
+            //         Model = editModel.Model,
+            //         Producer = editModel.Producer,
+            //         Price = editModel.Price,
+            //         Description = editModel.Description,
+            //         CategoryId = category,
+            //         ImageId = id,
+            //         Quantity = editModel.Quantity,
+            //     };
+            //
+            //     _unit
+            //         .ProductRepository
+            //         .Insert(product);
+            //     _unit.Save();
+            // }
 
-                return Redirect("/admin/products");
-            }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Products", "Backoffice");
+
+
+            // var user = _unit.UserRepository.Get(x => x.Email == User.Identity.Name)
+            //     .FirstOrDefault();
+            // if (user != null)
+            // {
+            //     
+            // }
+            //
+            // return RedirectToAction("Index", "Home");
         }
 
 
@@ -189,7 +225,7 @@ namespace TechShop.Controllers
                 .ToList();
             return View(purchases);
         }
-        
+
         [HttpPost]
         [Route("/admin/purchase")]
         public IActionResult UpdatePurchaseState(int purchaseId, string state)

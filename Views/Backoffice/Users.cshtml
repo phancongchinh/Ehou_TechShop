@@ -5,4 +5,34 @@
     Layout = "_Layout";
 }
 
-<h2>Backoffice Users</h2>
+<h2>Users</h2>
+
+<div class="container">
+    
+    <table class="table">
+        <thead>
+        <tr>
+            <td>Name</td>
+            <td>Phone</td>
+            <td>Email</td>
+            <td>Role</td>
+            <td>Actions</td>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var i in Model)
+        {
+            <tr>
+                <td><a href="/admin/users/@i.Id">@i.Name</a></td>
+                <td>@i.Phone</td>
+                <td>@i.Email</td>
+                <td>@i.UserRole.Name</td>
+                <td>
+                    <a class="btn btn-primary" href="/admin/users/@i.Id">Edit</a>
+                    <a class="btn btn-danger" href="/admin/users/remove/@i.Id?redirect=@Context.Request.Path">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
