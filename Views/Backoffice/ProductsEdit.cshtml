@@ -1,4 +1,4 @@
-﻿@model TechShop.Models.Dto.ProductEditModel
+﻿@model TechShop.Models.ViewModels.ProductVM
 
 @{
     ViewBag.Title = "Products";
@@ -13,7 +13,7 @@
             <div class="w-25 mt-5">
                 <img id="image" src="/image/@Model.ImageName" class="w-100"/>
             </div>
-            
+
             <div class="w-75">
                 <div class="form-group">
                     <input asp-for="Image" class="form-control" id="input-image"/>
@@ -51,18 +51,23 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Categories" class="control-label">Category</label>
-                    <select name="Categories" asp-items="@Model.Categories" class="form-control"></select>
+                    <select name="Categories"
+                            asp-items="@Model.Categories"
+                            asp-for="Categories.SelectedValue" class="form-control">
+                    </select>
+                    
                     <span asp-validation-for="Categories" class="text-danger"></span>
+
                 </div>
             </div>
-            
+
         </div>
-        
+
         <div class="d-flex flex-row-reverse">
             <button type="submit" class="btn btn-primary mt-5 ms-2">Save</button>
             <a asp-controller="Backoffice" asp-action="Products" class="btn btn-outline-secondary mt-5">Back to list</a>
         </div>
-        
+
     </form>
     <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
     <script>

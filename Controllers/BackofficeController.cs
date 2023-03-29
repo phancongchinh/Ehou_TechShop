@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TechShop.Data;
-using TechShop.Models.Dto;
 using TechShop.Models.Entity;
+using TechShop.Models.ViewModels;
 
 namespace TechShop.Controllers
 {
@@ -54,10 +54,10 @@ namespace TechShop.Controllers
 
         /* Create new product */
         [HttpGet]
-        [Route("/admin/products/new")]
-        public IActionResult AddNewProduct()
+        [Route("/admin/products/create")]
+        public IActionResult CreateProduct()
         {
-            return View("AddNewProduct", new ProductEditModel());
+            return View("ProductCreate", new ProductVM());
         }
 
         /* Update product information */
@@ -70,14 +70,14 @@ namespace TechShop.Controllers
 
             if (product == null) return NotFound();
 
-            ProductEditModel model = new()
+            ProductVM model = new()
             {
                 Model = product.Model,
                 Producer = product.Producer,
                 Price = product.Price,
                 Id = product.Id,
                 Description = product.Description,
-                ImageName = product.Image.Path,
+                ImageName = product.Image?.Path,
                 Quantity = product.Quantity
             };
 
@@ -106,114 +106,34 @@ namespace TechShop.Controllers
         }
 
 
-        public async Task<IActionResult> SaveAsync(ProductEditModel editModel)
+        public async Task<IActionResult> SaveAsync(ProductVM productVm)
         {
-            var product = _unit.ProductRepository.Get(x => x.Id == editModel.Id).FirstOrDefault();
+            var product = _unit.ProductRepository.Get(x => x.Id == productVm.Id).FirstOrDefault();
 
             if (product == null) return NotFound();
             
-            
-            // Product product = null;
-            // if (edit.Id != 0)
-            // {
-            //     product = _unit
-            //         .ProductRepository
-            //         .Get(x => x.Id == edit.Id)
-            //         .FirstOrDefault();
-            // }
-
             var category = int.Parse(Request.Form["Categories"].ToString());
             
-            // if (editModel.Image != null)
-            // {
-            //     var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", editModel.Image.FileName);
-            //     await editModel.Image.CopyToAsync(new FileStream(path, FileMode.Create));
-            //     _unit.ImageRepository.Insert(new Image() {Path = editModel.Image.FileName});
-            //     _unit.Save();
-            //     product.ImageId = _unit.ImageRepository.Get(x => x.Path == editModel.Image.FileName).FirstOrDefault()
-            //         .Id;
-            // }
-            
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", editModel.Image.FileName);
-            await editModel.Image.CopyToAsync(new FileStream(path, FileMode.Create));
-            _unit.ImageRepository.Insert(new Image() {Path = editModel.Image.FileName});
-            _unit.Save();
-            product.ImageId = _unit.ImageRepository.Get(x => x.Path == editModel.Image.FileName).FirstOrDefault()
-                .Id;
+            if (productVm.Image != null)
+            {
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", productVm.Image.FileName);
+                await productVm.Image.CopyToAsync(new FileStream(path, FileMode.Create));
+                Image image = new() {Path = productVm.Image.FileName};
+                _unit.ImageRepository.Insert(image);
+                _unit.Save();
+                product.ImageId = image.Id;
+            }
 
-            product.Model = editModel.Model;
-            product.Producer = editModel.Producer;
-            product.Price = editModel.Price;
-            product.Description = editModel.Description;
+            product.Model = productVm.Model;
+            product.Producer = productVm.Producer;
+            product.Price = productVm.Price;
+            product.Description = productVm.Description;
             product.CategoryId = category;
-            product.Quantity = editModel.Quantity;
+            product.Quantity = productVm.Quantity;
             _unit.ProductRepository.Update(product);
             _unit.Save();
-            
-            // if (product != null)
-            // {
-            //     if (editModel.Image != null)
-            //     {
-            //         var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", editModel.Image.FileName);
-            //         await editModel.Image.CopyToAsync(new FileStream(path, FileMode.Create));
-            //         _unit.ImageRepository.Insert(new Image() {Path = editModel.Image.FileName});
-            //         _unit.Save();
-            //         product.ImageId = _unit.ImageRepository.Get(x => x.Path == editModel.Image.FileName).FirstOrDefault()
-            //             .Id;
-            //     }
-            //
-            //     product.Model = editModel.Model;
-            //     product.Producer = editModel.Producer;
-            //     product.Price = editModel.Price;
-            //     product.Description = editModel.Description;
-            //     product.CategoryId = category;
-            //     product.Quantity = editModel.Quantity;
-            //     _unit
-            //         .ProductRepository
-            //         .Update(product);
-            //     _unit.Save();
-            // }
-            // else
-            // {
-            //     int id = 7;
-            //     if (editModel.Image != null)
-            //     {
-            //         editModel.Image = editModel.Image;
-            //         var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", editModel.Image.FileName);
-            //         await editModel.Image.CopyToAsync(new FileStream(path, FileMode.Create));
-            //         _unit.ImageRepository.Insert(new Image() {Path = editModel.Image.FileName});
-            //         _unit.Save();
-            //         id = _unit.ImageRepository.Get(x => x.Path == editModel.Image.FileName).FirstOrDefault().Id;
-            //     }
-            //
-            //     product = new Product()
-            //     {
-            //         Model = editModel.Model,
-            //         Producer = editModel.Producer,
-            //         Price = editModel.Price,
-            //         Description = editModel.Description,
-            //         CategoryId = category,
-            //         ImageId = id,
-            //         Quantity = editModel.Quantity,
-            //     };
-            //
-            //     _unit
-            //         .ProductRepository
-            //         .Insert(product);
-            //     _unit.Save();
-            // }
 
             return RedirectToAction("Products", "Backoffice");
-
-
-            // var user = _unit.UserRepository.Get(x => x.Email == User.Identity.Name)
-            //     .FirstOrDefault();
-            // if (user != null)
-            // {
-            //     
-            // }
-            //
-            // return RedirectToAction("Index", "Home");
         }
 
 

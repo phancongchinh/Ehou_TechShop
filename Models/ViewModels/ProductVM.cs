@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Http;
-namespace TechShop.Models.Dto
+
+namespace TechShop.Models.ViewModels
 {
-    public class ProductEditModel
+    public class ProductVM
     {
         public int Id { get; set; }
         public string Producer { get; set; }
