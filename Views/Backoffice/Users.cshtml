@@ -16,7 +16,7 @@
             <td>Phone</td>
             <td>Email</td>
             <td>Role</td>
-            <td>Actions</td>
+            <td class="text-end"></td>
         </tr>
         </thead>
         <tbody>
@@ -27,9 +27,9 @@
                 <td>@i.Phone</td>
                 <td>@i.Email</td>
                 <td>@i.UserRole.Name</td>
-                <td>
+                <td class="text-end">
                     <a class="btn btn-primary" href="/admin/users/@i.Id">Edit</a>
-                    @* <a class="btn btn-danger" href="/admin/users/remove/@i.Id?redirect=@Context.Request.Path">Delete</a> *@
+                    <a class="btn btn-danger" href="/admin/users/remove/@i.Id?redirect=@Context.Request.Path">Delete</a>
                 </td>
             </tr>
         }

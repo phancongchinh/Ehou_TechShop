@@ -10,13 +10,12 @@ using TechShop.Models.ViewModels;
 
 namespace TechShop.Controllers
 {
-    
     [Authorize(Roles = "Administrator")]
     public class BackofficeController : Controller
     {
         private readonly UnitOfWork _unit = new();
 
-        /* List all users */
+        /* USERS MANAGEMENT */
         [HttpGet]
         [Route("/admin/users")]
         public IActionResult Users()
@@ -25,16 +24,76 @@ namespace TechShop.Controllers
             return View("Users", users);
         }
 
-        /* List all categories */
+        /* CATEGORIES MANAGEMENT */
         [HttpGet]
         [Route("/admin/categories")]
         public IActionResult Categories()
         {
+            var errMsg= TempData["ErrorMessage"] as string;
+            ViewBag.ErrorMessage = errMsg!;
+            
             var categories = _unit.CategoryRepository.Get().ToList();
             return View("Categories", categories);
         }
 
-        /* List all product */
+        [HttpGet]
+        [Route("/admin/categories/create")]
+        public IActionResult CreateCategory()
+        {
+            return View("CategoryInfo", new Category());
+        }
+
+        [HttpGet]
+        [Route("/admin/categories/{id}")]
+        public IActionResult CategoryInfo(int id)
+        {
+            var category = _unit.CategoryRepository.Get(x => x.Id == id).FirstOrDefault();
+            if (category == null) return NotFound();
+
+            return View("CategoryInfo", category);
+        }
+
+        [HttpPost]
+        [Route("/admin/categories")]
+        public IActionResult SaveCategory(Category category)
+        {
+            if (category.Id != null)
+            {
+                _unit.CategoryRepository.Update(category);
+            }
+            else
+            {
+                _unit.CategoryRepository.Insert(category);
+            }
+
+            _unit.Save();
+
+            return RedirectToAction("Categories", "Backoffice");
+        }
+
+        [HttpGet]
+        [Route("/admin/categories/delete/{id}")]
+        public IActionResult DeleteCategory(int id)
+        {
+            var category = _unit.CategoryRepository.Get(x => x.Id == id, includeProperties: "Products")
+                .FirstOrDefault();
+
+            if (category == null) return NotFound();
+
+            if (category.Products.Any())
+            {
+                TempData["ErrorMessage"]="Can not delete because there's some product in this category!";
+                return RedirectToAction("Categories", "Backoffice");
+            }
+
+            _unit.CategoryRepository.Delete(category);
+            _unit.Save();
+
+            return RedirectToAction("Categories", "Backoffice");
+        }
+
+
+        /* PRODUCTS MANAGEMENT */
         [HttpGet]
         [Route("/admin/products")]
         public IActionResult Products()
@@ -52,15 +111,6 @@ namespace TechShop.Controllers
             return View("Products", products);
         }
 
-        /* Create new product */
-        [HttpGet]
-        [Route("/admin/categories/create")]
-        public IActionResult CreateCategory()
-        {
-            return View("CategoryCreate", new Category());
-        }
-
-        /* Create new product */
         [HttpGet]
         [Route("/admin/products/create")]
         public IActionResult CreateProduct()
@@ -68,12 +118,12 @@ namespace TechShop.Controllers
             return View("ProductCreate", new ProductVM());
         }
 
-        /* Update product information */
         [HttpGet]
         [Route("/admin/products/{id}")]
         public IActionResult EditProduct(int id)
         {
-            var product = _unit.ProductRepository.Get(x => x.Id == id && x.IsDeleted == false, includeProperties: "Category,Image")
+            var product = _unit.ProductRepository
+                .Get(x => x.Id == id && x.IsDeleted == false, includeProperties: "Category,Image")
                 .FirstOrDefault();
 
             if (product == null) return NotFound();
@@ -144,26 +194,8 @@ namespace TechShop.Controllers
             return RedirectToAction("Products", "Backoffice");
         }
 
-        public IActionResult SaveCategoryAsync(Category category)
-        {
-            if (category.Id != null)
-            {
-                var savedCategory = _unit.CategoryRepository.Get(x => x.Id == category.Id).FirstOrDefault();
-                if (savedCategory == null) return NotFound();
 
-                _unit.CategoryRepository.Update(category);
-            }
-            else
-            {
-                _unit.CategoryRepository.Insert(category);
-            }
-
-            _unit.Save();
-
-            return RedirectToAction("Categories", "Backoffice");
-        }
-
-
+        /* PURCHASES MANAGEMENT */
         [HttpGet]
         [Route("/admin/purchases")]
         public IActionResult Purchases()

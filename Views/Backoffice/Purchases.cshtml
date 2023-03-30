@@ -16,7 +16,7 @@
             <td>User</td>
             <td>Creation Time</td>
             <td>State</td>
-            <td>Actions</td>
+            <td class="text-end"></td>
         </tr>
         </thead>
         <tbody>
@@ -29,8 +29,9 @@
                 <td>@i.User.Email</td>
                 <td>@i.CreationTime</td>
                 <td>@i.State</td>
-                <td>
-                    <a class="btn btn-primary" href="/admin/products/@i.Id">Edit</a>
+                <td class="text-end">
+                    <a class="btn btn-primary" href="/admin/purchases/@i.Id">Edit</a>
+                    <a class="btn btn-danger" href="/admin/purchases/remove/@i.Id">Delete</a>
                 </td>
             </tr>
         }

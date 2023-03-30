@@ -17,7 +17,7 @@
             <td>Category</td>
             <td>Price</td>
             <td>Description</td>
-            <td>Actions</td>
+            <td class="text-end"></td>
         </tr>
         </thead>
         <tbody>
@@ -28,7 +28,7 @@
                     <td>@i.Category.Name</td>
                     <td>$ @i.Price</td>
                     <td>@i.Description</td>
-                    <td>
+                    <td class="text-end">
                         <a class="btn btn-primary" href="/admin/products/@i.Id">Edit</a>
                         <a class="btn btn-danger" href="/admin/products/remove/@i.Id?redirect=@Context.Request.Path">Delete</a>
                     </td>

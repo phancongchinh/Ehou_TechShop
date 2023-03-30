@@ -9,12 +9,19 @@
 
 <div class="container">
 
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-warning">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
     <table class="table">
         <thead>
         <tr>
             <td>Name</td>
             <td>Description</td>
-            <td>Actions</td>
+            <td class="text-end"></td>
         </tr>
         </thead>
         <tbody>
@@ -25,8 +32,9 @@
                     <a href="/admin/categories/@i.Id">@i.Name</a>
                 </td>
                 <td>@i.Description</td>
-                <td>
+                <td class="text-end">
                     <a class="btn btn-primary" href="/admin/categories/@i.Id">Edit</a>
+                    <a class="btn btn-danger" href="/admin/categories/delete/@i.Id">Delete</a>
                 </td>
             </tr>
         }
