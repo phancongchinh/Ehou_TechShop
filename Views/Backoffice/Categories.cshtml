@@ -8,7 +8,7 @@
 <h2>Categories</h2>
 
 <div class="container">
-    
+
     <table class="table">
         <thead>
         <tr>
@@ -21,17 +21,19 @@
         @foreach (var i in Model)
         {
             <tr>
-                <td><a href="/admin/categories/@i.Id">@i.Name</a></td>
+                <td>
+                    <a href="/admin/categories/@i.Id">@i.Name</a>
+                </td>
                 <td>@i.Description</td>
                 <td>
-                    <a class="btn btn-primary" href="/admin/products/@i.Id">Edit</a>
+                    <a class="btn btn-primary" href="/admin/categories/@i.Id">Edit</a>
                 </td>
             </tr>
         }
         </tbody>
     </table>
-    
-    <a class="btn btn-success" href="/admin/categories/new">
+
+    <a class="btn btn-success" href="/admin/categories/create">
         <i class="fa fa-plus me-2"></i> Add new
     </a>
 </div>

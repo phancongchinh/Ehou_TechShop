@@ -49,7 +49,7 @@ namespace TechShop.Controllers
             Purchase newPurchase = new()
             {
                 UserId = user.Id,
-                State = "PENDING",
+                State = "Pending",
                 CreationTime = DateTime.Now,
             };
 

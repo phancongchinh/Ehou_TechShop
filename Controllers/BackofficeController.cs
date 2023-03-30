@@ -54,6 +54,14 @@ namespace TechShop.Controllers
 
         /* Create new product */
         [HttpGet]
+        [Route("/admin/categories/create")]
+        public IActionResult CreateCategory()
+        {
+            return View("CategoryCreate", new Category());
+        }
+
+        /* Create new product */
+        [HttpGet]
         [Route("/admin/products/create")]
         public IActionResult CreateProduct()
         {
@@ -106,14 +114,14 @@ namespace TechShop.Controllers
         }
 
 
-        public async Task<IActionResult> SaveAsync(ProductVM productVm)
+        public async Task<IActionResult> SaveProductAsync(ProductVM productVm)
         {
             var product = _unit.ProductRepository.Get(x => x.Id == productVm.Id).FirstOrDefault();
 
             if (product == null) return NotFound();
-            
+
             var category = int.Parse(Request.Form["Categories"].ToString());
-            
+
             if (productVm.Image != null)
             {
                 var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", productVm.Image.FileName);
@@ -134,6 +142,25 @@ namespace TechShop.Controllers
             _unit.Save();
 
             return RedirectToAction("Products", "Backoffice");
+        }
+
+        public IActionResult SaveCategoryAsync(Category category)
+        {
+            if (category.Id != null)
+            {
+                var savedCategory = _unit.CategoryRepository.Get(x => x.Id == category.Id).FirstOrDefault();
+                if (savedCategory == null) return NotFound();
+
+                _unit.CategoryRepository.Update(category);
+            }
+            else
+            {
+                _unit.CategoryRepository.Insert(category);
+            }
+
+            _unit.Save();
+
+            return RedirectToAction("Categories", "Backoffice");
         }
 
 
