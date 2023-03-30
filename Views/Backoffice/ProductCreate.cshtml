@@ -44,10 +44,15 @@
                     <input asp-for="Quantity" class="form-control"/>
                     <span asp-validation-for="Quantity" class="text-danger"></span>
                 </div>
-                <div class="form-group">
+                 <div class="form-group">
                     <label asp-for="Categories" class="control-label">Category</label>
-                    <select name="Categories" asp-items="@Model.Categories" class="form-control"></select>
+                    <select name="Categories"
+                            asp-items="@Model.Categories"
+                            asp-for="Categories.SelectedValue" class="form-control">
+                    </select>
+                    
                     <span asp-validation-for="Categories" class="text-danger"></span>
+
                 </div>
             </div>
             
