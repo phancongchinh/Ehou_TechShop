@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using TechShop.Data;
 using TechShop.Models.Entity;
 using TechShop.Models.ViewModels;
@@ -46,18 +47,16 @@ namespace TechShop.Controllers
 
         [HttpPost]
         [Route("/admin/users")]
-        public IActionResult SaveUser(User user)
+        public async Task<IActionResult> SaveUser(User user)
         {
             if (user.Id != null)
             {
+                var savedUser = await _unit.UserRepository.dbSet.AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Id == user.Id);
+                user.PasswordHash = savedUser.PasswordHash;
                 _unit.UserRepository.Update(user);
+                _unit.Save();
             }
-            else
-            {
-                _unit.UserRepository.Insert(user);
-            }
-
-            _unit.Save();
 
             return RedirectToAction("Users", "Backoffice");
         }

@@ -9,7 +9,7 @@ namespace TechShop.Data
     public class Repository<T> : IRepository<T> where T : class
     {
         private AppDbContext context;
-        private DbSet<T> dbSet;
+        public readonly DbSet<T> dbSet;
 
         public Repository(AppDbContext context)
         {
