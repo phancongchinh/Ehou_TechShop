@@ -1,0 +1,109 @@
+﻿@model TechShop.Models.Entity.Purchase
+
+@{
+    ViewBag.Title = "Purchase";
+    Layout = "_Layout";
+}
+
+<h2>Purchase Information</h2>
+
+<div class="container">
+    <form asp-action="UpdatePurchase" method="post">
+        <div class="d-flex flex-row align-items-center">
+            <div>
+                <div class="form-group" hidden>
+                    <label asp-for="Id" class="control-label"></label>
+                    <input asp-for="Id" class="form-control"/>
+                    <span asp-validation-for="Id" class="text-danger"></span>
+                </div>
+                <div class="form-group" hidden>
+                    <label asp-for="UserId" class="control-label"></label>
+                    <input asp-for="UserId" class="form-control"/>
+                    <span asp-validation-for="UserId" class="text-danger"></span>
+                </div>
+                <div class="form-group d-flex align-items-center">
+                    <label asp-for="CreationTime" class="control-label me-2"></label>
+                    <input asp-for="CreationTime" class="form-control" style="width: 300px"/>
+                    <span asp-validation-for="CreationTime" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="ms-auto d-flex align-items-center">
+                <label asp-for="State" class="control-label"></label>
+                <select name="State" id="state" class="form-control ms-2">
+                    @if (Model.State == "Pending")
+                    {
+                        <option value="Pending" selected>Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    }
+                    @if (Model.State == "Processing")
+                    {
+                        <option value="Pending">Pending</option>
+                        <option value="Processing" selected>Processing</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    }
+                    @if (Model.State == "Completed")
+                    {
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Completed" selected>Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    }
+                    @if (Model.State == "Cancelled")
+                    {
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled" selected>Cancelled</option>
+                    }
+
+                </select>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <table class="table">
+                <thead>
+                <tr>
+                    <td class="col-5">Name</td>
+                    <td class="col-2">Quantity</td>
+                    <td class="col-2">Price</td>
+                    <td class="col-3"></td>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var i in Model.PurchaseProducts)
+                {
+                    <tr>
+                        <td>
+                            <a href="/admin/products/@i.ProductId">@i.Product.Name</a>
+                        </td>
+                        <td>@i.Count</td>
+                        <td>$ @(i.Product.Price * i.Count)</td>
+                        <td></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <hr>
+
+            <div class="container d-flex flex-row align-items-center">
+                <div class="col-2"></div>
+
+                <div class="col-2 ms-auto">
+                    <h5 class="align-content-lg-end mt-3">
+                        Total: $ @Model.PurchaseProducts.Sum(x => x.Count * x.Product.Price)
+                    </h5>
+                </div>
+
+                <div class="col-3 text-end">
+                    <a asp-controller="Backoffice" asp-action="Purchases" class="btn btn-outline-secondary">Back to list</a>
+                    <button type="submit" class="ms-2 btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +16,16 @@ namespace TechShop.Controllers
     {
         private readonly UnitOfWork _unit = new();
 
-        /* USERS MANAGEMENT */
+        private readonly ArrayList purchaseStates = new()
+        {
+            "Pending", "Processing", "Completed", "Cancelled"
+        };
+
+        /*
+         *
+         * USERS MANAGEMENT
+         *
+         */
         [HttpGet]
         [Route("/admin/users")]
         public IActionResult Users()
@@ -54,7 +64,7 @@ namespace TechShop.Controllers
 
         [HttpGet]
         [Route("/admin/users/state/{id}")]
-        public IActionResult DisableUser(int id, [FromQuery(Name = "disabled")] bool disabled)
+        public IActionResult UpdateUserState(int id, [FromQuery(Name = "disabled")] bool disabled)
         {
             var user = _unit.UserRepository.Get(x => x.Id == id && x.RoleId != 1).FirstOrDefault();
 
@@ -68,7 +78,12 @@ namespace TechShop.Controllers
             return RedirectToAction("Users", "Backoffice");
         }
 
-        /* CATEGORIES MANAGEMENT */
+
+        /*
+         *
+         * CATEGORIES MANAGEMENT
+         *
+         */
         [HttpGet]
         [Route("/admin/categories")]
         public IActionResult Categories()
@@ -137,7 +152,11 @@ namespace TechShop.Controllers
         }
 
 
-        /* PRODUCTS MANAGEMENT */
+        /*
+         *
+         * PRODUCTS MANAGEMENT
+         *
+         */
         [HttpGet]
         [Route("/admin/products")]
         public IActionResult Products()
@@ -207,7 +226,6 @@ namespace TechShop.Controllers
             return RedirectToAction("Products", "Backoffice");
         }
 
-
         public async Task<IActionResult> SaveProductAsync(ProductVM productVm)
         {
             var product = _unit.ProductRepository.Get(x => x.Id == productVm.Id).FirstOrDefault();
@@ -239,7 +257,11 @@ namespace TechShop.Controllers
         }
 
 
-        /* PURCHASES MANAGEMENT */
+        /*
+         *
+         * PURCHASES MANAGEMENT
+         *
+         */
         [HttpGet]
         [Route("/admin/purchases")]
         public IActionResult Purchases()
@@ -249,16 +271,28 @@ namespace TechShop.Controllers
             return View(purchases);
         }
 
-        [HttpPost]
-        [Route("/admin/purchase")]
-        public IActionResult UpdatePurchaseState(int purchaseId, string state)
+        [HttpGet]
+        [Route("/admin/purchases/{id}")]
+        public IActionResult PurchaseInfo(int id)
         {
-            var purchase = _unit.PurchaseRepository.GetById(purchaseId);
+            var purchase = _unit.PurchaseRepository
+                .Get(x => x.Id == id, includeProperties: "User,PurchaseProducts.Product")
+                .FirstOrDefault();
+
             if (purchase == null) return NotFound();
 
-            purchase.State = state;
+            return View("PurchaseInfo", purchase);
+        }
+
+        [HttpPost]
+        [Route("/admin/purchases")]
+        public IActionResult UpdatePurchase(Purchase purchase)
+        {
+            if (!purchaseStates.Contains(purchase.State)) return BadRequest();
+            _unit.PurchaseRepository.Update(purchase);
             _unit.Save();
-            return RedirectToAction("Purchases");
+
+            return RedirectToAction("Purchases", "Backoffice");
         }
     }
 }
