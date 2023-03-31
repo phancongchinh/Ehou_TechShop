@@ -8,7 +8,7 @@
 <h2>Users</h2>
 
 <div class="container">
-    
+
     <table class="table">
         <thead>
         <tr>
@@ -16,20 +16,51 @@
             <td>Phone</td>
             <td>Email</td>
             <td>Role</td>
+            <td style="width: 200px">State</td>
             <td class="text-end"></td>
         </tr>
         </thead>
         <tbody>
+
+
         @foreach (var i in Model)
         {
             <tr>
-                <td><a href="/admin/users/@i.Id">@i.Name</a></td>
+                <td>
+                    @if (i.UserRole.Id != 1)
+                    {
+                        <a href="/admin/users/@i.Id">@i.Name</a>
+                    }
+                    else
+                    {
+                        <span>@i.Name</span>
+                    }
+
+                </td>
                 <td>@i.Phone</td>
                 <td>@i.Email</td>
                 <td>@i.UserRole.Name</td>
+                @if (i.IsDisabled)
+                {
+                    <td class="text-danger">Disabled</td>
+                }
+                else
+                {
+                    <td></td>
+                }
                 <td class="text-end">
-                    <a class="btn btn-primary" href="/admin/users/@i.Id">Edit</a>
-                    <a class="btn btn-danger" href="/admin/users/remove/@i.Id?redirect=@Context.Request.Path">Delete</a>
+                    @if (i.UserRole.Id != 1)
+                    {
+                        <a class="btn btn-primary" href="/admin/users/@i.Id">Edit</a>
+                        @if (i.IsDisabled)
+                        {
+                            <a class="btn btn-success" href="/admin/users/state/@i.Id?disabled=false">Enable</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-danger" href="/admin/users/state/@i.Id?disabled=true">Disable</a>
+                        }
+                    }
                 </td>
             </tr>
         }

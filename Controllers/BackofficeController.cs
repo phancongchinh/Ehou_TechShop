@@ -24,14 +24,58 @@ namespace TechShop.Controllers
             return View("Users", users);
         }
 
+        [HttpGet]
+        [Route("/admin/users/{id}")]
+        public IActionResult UserInfo(int id)
+        {
+            var user = _unit.UserRepository.Get(x => x.Id == id, includeProperties: "UserRole").FirstOrDefault();
+            if (user == null) return NotFound();
+
+            return View("UserInfo", user);
+        }
+
+        [HttpPost]
+        [Route("/admin/users")]
+        public IActionResult SaveUser(User user)
+        {
+            if (user.Id != null)
+            {
+                _unit.UserRepository.Update(user);
+            }
+            else
+            {
+                _unit.UserRepository.Insert(user);
+            }
+
+            _unit.Save();
+
+            return RedirectToAction("Users", "Backoffice");
+        }
+
+        [HttpGet]
+        [Route("/admin/users/state/{id}")]
+        public IActionResult DisableUser(int id, [FromQuery(Name = "disabled")] bool disabled)
+        {
+            var user = _unit.UserRepository.Get(x => x.Id == id && x.RoleId != 1).FirstOrDefault();
+
+            if (user == null) return NotFound();
+
+            user.IsDisabled = disabled;
+
+            _unit.UserRepository.Update(user);
+            _unit.Save();
+
+            return RedirectToAction("Users", "Backoffice");
+        }
+
         /* CATEGORIES MANAGEMENT */
         [HttpGet]
         [Route("/admin/categories")]
         public IActionResult Categories()
         {
-            var errMsg= TempData["ErrorMessage"] as string;
+            var errMsg = TempData["ErrorMessage"] as string;
             ViewBag.ErrorMessage = errMsg!;
-            
+
             var categories = _unit.CategoryRepository.Get().ToList();
             return View("Categories", categories);
         }
@@ -82,7 +126,7 @@ namespace TechShop.Controllers
 
             if (category.Products.Any())
             {
-                TempData["ErrorMessage"]="Can not delete because there's some product in this category!";
+                TempData["ErrorMessage"] = "Can not delete because there's some product in this category!";
                 return RedirectToAction("Categories", "Backoffice");
             }
 

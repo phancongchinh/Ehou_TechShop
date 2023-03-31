@@ -49,6 +49,14 @@ namespace TechShop.Controllers
             includeProperties: "UserRole").FirstOrDefault();
             if (user != null)
             {
+                
+                if (user.IsDisabled)
+                {
+                    ModelState.AddModelError("", "Your account is temporarily disabled");
+
+                    return View(model);
+                }
+                
                 await Authenticate(user);
 
                 return RedirectToAction("Index", "Home");
