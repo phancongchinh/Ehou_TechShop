@@ -177,7 +177,12 @@ namespace TechShop.Controllers
         [Route("/admin/products/create")]
         public IActionResult CreateProduct()
         {
-            return View("ProductCreate", new ProductVM());
+            ProductVM model = new();
+            var categories = _unit.CategoryRepository.Get().ToList();
+            var select = categories.FirstOrDefault();
+            var selectList = new SelectList(categories, "Id", "Name", select);
+            model.Categories = selectList;
+            return View("ProductCreate", model);
         }
 
         [HttpGet]
@@ -214,7 +219,6 @@ namespace TechShop.Controllers
         public IActionResult RemoveProduct(int id)
         {
             var product = _unit.ProductRepository.Get(x => x.Id == id).FirstOrDefault();
-
             if (product == null) return NotFound();
 
             product.IsDeleted = true;
@@ -228,29 +232,56 @@ namespace TechShop.Controllers
         public async Task<IActionResult> SaveProductAsync(ProductVM productVm)
         {
             var product = _unit.ProductRepository.Get(x => x.Id == productVm.Id).FirstOrDefault();
-
-            if (product == null) return NotFound();
-
             var category = int.Parse(Request.Form["Categories"].ToString());
-
-            if (productVm.Image != null)
+            int listProduct = _unit.ProductRepository.Get().Count();
+            if (product == null)
             {
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", productVm.Image.FileName);
-                await productVm.Image.CopyToAsync(new FileStream(path, FileMode.Create));
-                Image image = new() {Path = productVm.Image.FileName};
-                _unit.ImageRepository.Insert(image);
+                if (productVm.Image != null)
+                {
+                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", productVm.Image.FileName);
+                    await productVm.Image.CopyToAsync(new FileStream(path, FileMode.Create));
+                    Image image = new() { Path = productVm.Image.FileName };
+                    _unit.ImageRepository.Insert(image);
+                    _unit.Save();
+                    Product model = new()
+                    {
+                        Model = productVm.Model,
+                        Producer = productVm.Producer,
+                        Price = productVm.Price,
+                        Description = productVm.Description,
+                        ImageId = image.Id,
+                        Quantity = productVm.Quantity,
+                        CategoryId = category,
+                        IsDeleted = false,
+                    };
+                    _unit.ProductRepository.Insert(model);
+                    _unit.Save();
+                }
+            }
+            else
+            {
+                if (productVm.Image != null)
+                {
+                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", productVm.Image.FileName);
+                    await productVm.Image.CopyToAsync(new FileStream(path, FileMode.Create));
+                    Image image = new() { Path = productVm.Image.FileName };
+                    _unit.ImageRepository.Insert(image);
+                    _unit.Save();
+                    product.ImageId = image.Id;
+                }
+
+                product.Model = productVm.Model;
+                product.Producer = productVm.Producer;
+                product.Price = productVm.Price;
+                product.Description = productVm.Description;
+                product.CategoryId = category;
+                product.Quantity = productVm.Quantity;
+                product.IsDeleted = false;
+                _unit.ProductRepository.Update(product);
                 _unit.Save();
-                product.ImageId = image.Id;
             }
 
-            product.Model = productVm.Model;
-            product.Producer = productVm.Producer;
-            product.Price = productVm.Price;
-            product.Description = productVm.Description;
-            product.CategoryId = category;
-            product.Quantity = productVm.Quantity;
-            _unit.ProductRepository.Update(product);
-            _unit.Save();
+          
 
             return RedirectToAction("Products", "Backoffice");
         }
