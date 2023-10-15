@@ -1,7 +1,4 @@
 ﻿using System.Collections;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -36,7 +33,7 @@ namespace TechShop.Controllers
         }
 
         [HttpGet]
-        [Route("/admin/users/{id}")]
+        [Route("/admin/users/{id:int}")]
         public IActionResult UserInfo(int id)
         {
             var user = _unit.UserRepository.Get(x => x.Id == id, includeProperties: "UserRole").FirstOrDefault();
@@ -51,7 +48,7 @@ namespace TechShop.Controllers
         {
             if (user.Id != null)
             {
-                var savedUser = await _unit.UserRepository.dbSet.AsNoTracking()
+                var savedUser = await _unit.UserRepository.DbSet.AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == user.Id);
                 user.PasswordHash = savedUser.PasswordHash;
                 _unit.UserRepository.Update(user);
@@ -62,7 +59,7 @@ namespace TechShop.Controllers
         }
 
         [HttpGet]
-        [Route("/admin/users/state/{id}")]
+        [Route("/admin/users/state/{id:int}")]
         public IActionResult UpdateUserState(int id, [FromQuery(Name = "disabled")] bool disabled)
         {
             var user = _unit.UserRepository.Get(x => x.Id == id && x.RoleId != 1).FirstOrDefault();
@@ -130,7 +127,7 @@ namespace TechShop.Controllers
         }
 
         [HttpGet]
-        [Route("/admin/categories/delete/{id}")]
+        [Route("/admin/categories/delete/{id:int}")]
         public IActionResult DeleteCategory(int id)
         {
             var category = _unit.CategoryRepository.Get(x => x.Id == id, includeProperties: "Products")
@@ -281,7 +278,6 @@ namespace TechShop.Controllers
                 _unit.Save();
             }
 
-          
 
             return RedirectToAction("Products", "Backoffice");
         }

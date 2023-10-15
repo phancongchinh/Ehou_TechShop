@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TechShop.Models.Entity
 {
@@ -8,8 +6,9 @@ namespace TechShop.Models.Entity
     public class UserRole
     {
         public int Id { get; set; }
+
         public string Name { get; set; }
-        
+
         public IEnumerable<User> Users { get; set; }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using TechShop.Data;
 using TechShop.Models.Dto;
 using TechShop.Models.Entity;
+using TechShop.Models.ViewModels;
 using TechShop.Services;
 
 namespace TechShop.Controllers

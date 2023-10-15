@@ -4,7 +4,7 @@ namespace TechShop.Data
 {
     public class UnitOfWork
     {
-        private AppDbContext _context;
+        private readonly AppDbContext _context;
 
         public readonly Repository<User> UserRepository;
         public readonly Repository<Product> ProductRepository;

@@ -16,7 +16,7 @@ namespace TechShop.Data.Configurations
             builder.Property(e => e.Description).HasColumnType("ntext");
             builder.HasOne(e => e.Category).WithMany(e => e.Products).HasForeignKey(e => e.CategoryId);
             builder.HasMany(e => e.PurchaseProducts).WithOne(e => e.Product).HasForeignKey(e => e.ProductId);
-            builder.HasMany(e => e.ShoppingCarts).WithOne(e => e.Product).HasForeignKey(e => e.ProductId);
+            builder.HasMany(e => e.ShoppingCartItems).WithOne(e => e.Product).HasForeignKey(e => e.ProductId);
         }
     }
 }

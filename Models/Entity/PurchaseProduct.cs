@@ -6,10 +6,13 @@ namespace TechShop.Models.Entity
     public class PurchaseProduct
     {
         public int PurchaseId { get; set; }
+
         public int ProductId { get; set; }
+
         public decimal Price { get; set; }
+
         public int Count { get; set; }
-        
+
         public Purchase Purchase { get; set; }
         public Product Product { get; set; }
     }

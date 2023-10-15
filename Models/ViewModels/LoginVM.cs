@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TechShop.Models.Dto
+namespace TechShop.Models.ViewModels
 {
     public class LoginVM
     {
